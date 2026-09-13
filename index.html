@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>I Love You ❤️</title>
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    background: black;
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+}
+canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+</style>
+</head>
+<body>
+
+<canvas id="heartCanvas"></canvas>
+
+<script>
+const canvas = document.getElementById("heartCanvas");
+const ctx = canvas.getContext("2d");
+
+let width;
+let height;
+
+function resizeCanvas() {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+}
+
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
+
+function heartPoint(angle, scale) {
+    const x = 16 * Math.pow(Math.sin(angle), 3) * scale;
+    const y = (
+        13 * Math.cos(angle)
+        - 5 * Math.cos(2 * angle)
+        - 2 * Math.cos(3 * angle)
+        - Math.cos(4 * angle)
+    ) * scale;
+
+    return { x, y };
+}
+
+function drawHeart(scale, color, lineWidth) {
+    ctx.beginPath();
+
+    for (let i = 0; i <= 200; i++) {
+        const angle = (Math.PI * 2 / 200) * i;
+        const point = heartPoint(angle, scale);
+
+        const x = width / 2 + point.x;
+        const y = height / 2 - point.y;
+
+        if (i === 0) {
+            ctx.moveTo(x, y);
+        } else {
+            ctx.lineTo(x, y);
+        }
+    }
+
+    ctx.closePath();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = lineWidth;
+    ctx.stroke();
+}
+
+function drawLoveText(scale) {
+    ctx.fillStyle = "#ffb6c1";
+    ctx.font = "bold 10px Arial";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    for (let i = 0; i < 120; i++) {
+        const angle = (Math.PI * 2 / 120) * i;
+        const point = heartPoint(angle, scale);
+
+        const x = width / 2 + point.x;
+        const y = height / 2 - point.y;
+
+        ctx.fillText("I love you", x, y);
+    }
+}
+
+let time = 0;
+
+function animate() {
+    time += 0.02;
+
+    ctx.clearRect(0, 0, width, height);
+
+    const pulse = Math.sin(time * 3) * 0.5;
+    const scale = Math.min(width, height) / 55 + pulse;
+
+    ctx.shadowBlur = 35;
+    ctx.shadowColor = "#ff0055";
+    drawHeart(scale + 3, "#330011", 12);
+
+    ctx.shadowBlur = 25;
+    ctx.shadowColor = "#ff0055";
+    drawHeart(scale + 2, "#660022", 9);
+
+    ctx.shadowBlur = 18;
+    ctx.shadowColor = "#ff174f";
+    drawHeart(scale + 1, "#cc003f", 6);
+
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = "#ff4f81";
+    drawHeart(scale, "#ff174f", 3);
+
+    ctx.shadowBlur = 5;
+    ctx.shadowColor = "#ffffff";
+    drawHeart(scale - 0.5, "#ffb6c1", 1);
+
+    ctx.shadowBlur = 0;
+    drawLoveText(scale);
+
+    requestAnimationFrame(animate);
+}
+
+animate();
+</script>
+
+</body>
+</html>
